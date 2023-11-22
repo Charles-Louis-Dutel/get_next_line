@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cdutel <cdutel@student.42.fr>              +#+  +:+       +#+        */
+/*   By: cdutel <cdutel@42student.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 21:01:32 by cdutel            #+#    #+#             */
-/*   Updated: 2023/11/21 08:25:14 by cdutel           ###   ########.fr       */
+/*   Updated: 2023/11/22 10:05:21 by cdutel           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,70 +26,34 @@ static int	ft_strlen(char *s)
 	return (i);
 }
 
-static char	*ft_check_newline(char *s)
+char	*ft_update_temp(char *dest, char *temp)
 {
 	int	i;
-	int	start;
-	char	*after_new_line;
+	int	j;
 
-	i = 0;
-	while (s[i] && s[i] != '\n')
-		i++;
-	start = i;
-	while (s[i])
-		i++;
-	if (s[start] == '\n')
-	{
-		after_new_line = malloc(sizeof(char) * (i - start));
-		if (!after_new_line)
-			return (NULL);
+	if (temp == NULL)
 		i = 0;
-		while (s[start + 1])
-		{
-			after_new_line[i] = s[start + 1];
-			i++;
-			start++;
-		}
-		return (after_new_line);
+	else
+		i = ft_strlen(temp);
+	j = 0;
+	while (dest[j])
+	{
+		temp[i] = dest[j];
+		i++;
+		j++;
 	}
-	return (s);
+	temp[i] = '\0';
+	return (temp);
 }
 
-static char *ft_return_line(char *s)
-{
-	int		i;
-	char	*line;
-
-	i = 0;
-	while (s[i] && s[i] != '\n')
-		i++;
-	if (s[i] == '\n' || s[i + 1] == '\0')
-	{
-		line = malloc(sizeof(char) * i + 1);
-		if (!line)
-			return (NULL);
-		i = 0;
-		while (s[i] && s[i] != '\n')
-		{
-			line[i] = s[i];
-			i++;
-		}
-		line[i] = s[i];
-		i++;
-		line[i] = '\0';
-		return (line);
-	}
-	return (NULL);
-}
-
-int	ft_check_backslash_n(char *s)
+int	ft_check_temp(char *temp)
 {
 	int	i;
 
 	i = 0;
-	while (s[i])
+	while (temp[i])
 	{
-		if (s[i] == '\n')
+		if (temp[i] == '\n' || temp[i] == '\0')
 			return (1);
 		i++;
 	}
@@ -98,54 +62,39 @@ int	ft_check_backslash_n(char *s)
 
 char	*get_next_line(int fd)
 {
-	char		*dest = NULL;
-	char		*line = NULL;
 	static char	*temp;
-	int			i;
-	int			j;
+	char		*dest;
+	char		*line;
+	int			trigger;
 	int			value;
 
-	dest = malloc(sizeof(char) * BUFFER_SIZE);
-	value = read(fd, dest, BUFFER_SIZE);
-	/*if (value == 0)
-		return(NULL);*/
-	//printf("%s\n", dest);
-	if (temp)
-		line = ft_check_newline(temp);
-	//printf("%s\n", line);
-	temp = malloc(sizeof(char) * (ft_strlen(dest) + ft_strlen(line) + 1));
 	if (!temp)
 	{
-		free(temp);
+		temp = malloc(sizeof(char) * 1000);
+		if (!temp)
+			return (NULL);
+	}
+	trigger = 0;
+	while (trigger == 0)
+	{
+		dest = malloc(sizeof(char) * BUFFER_SIZE + 1);
+		if (!dest)
+			return(NULL);
+		value = read(fd, dest, BUFFER_SIZE);
+		temp = ft_update_temp(dest, temp);
+		if (ft_check_temp(temp) == 1)
+			trigger = 1;
+		if (value < BUFFER_SIZE)
+			trigger = 1;
+	}
+	if (ft_check_temp(temp) == 1)
+	{
+		line = ft_new_line(temp);
+		temp = ft_new_temp(temp);
+		return (line);
+	}
+	if (value == 0)
 		return (NULL);
-	}
-	i = 0;
-	if (line != NULL)
-	{
-		while (line[i])
-		{
-			temp[i] = line[i];
-			i++;
-		}
-	}
-	j = 0;
-	while (dest[j])
-	{
-		temp[i] = dest[j];
-		i++;
-		j++;
-	}
-	free(dest);
-	free(line);
-	//printf("%s\n", temp);
-	//printf("%d\n", ft_check_backslash_n(temp));
-	if (ft_check_backslash_n(temp) == 0)
-		get_next_line(fd);
-	if (ft_check_backslash_n(temp) == 1)
-	{
-		line = ft_return_line(temp);
-		return(line);
-	}
 	return (NULL);
 }
 

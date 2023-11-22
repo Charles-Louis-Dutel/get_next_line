@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cdutel <cdutel@student.42.fr>              +#+  +:+       +#+        */
+/*   By: cdutel <cdutel@42student.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 21:01:37 by cdutel            #+#    #+#             */
-/*   Updated: 2023/11/20 23:13:16 by cdutel           ###   ########.fr       */
+/*   Updated: 2023/11/21 14:32:35 by cdutel           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,5 +22,7 @@
 # include <stdlib.h>
 
 char	*get_next_line(int fd);
+char	*ft_new_line(char *temp);
+char	*ft_new_temp(char *temp);
 
 #endif
