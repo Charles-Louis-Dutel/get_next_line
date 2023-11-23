@@ -6,7 +6,7 @@
 /*   By: cdutel <cdutel@42student.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 21:01:37 by cdutel            #+#    #+#             */
-/*   Updated: 2023/11/22 15:11:03 by cdutel           ###   ########.fr       */
+/*   Updated: 2023/11/23 11:48:00 by cdutel           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@
 
 char	*get_next_line(int fd);
 char	*ft_new_line(char *temp);
-void	ft_new_temp(char temp[]);
+char	*ft_new_temp(char *temp);
+int		ft_len(char *s);
+void	*ft_calloc(size_t nmemb, size_t size);
 
 #endif

@@ -6,78 +6,99 @@
 /*   By: cdutel <cdutel@42student.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 21:01:32 by cdutel            #+#    #+#             */
-/*   Updated: 2023/11/22 15:21:29 by cdutel           ###   ########.fr       */
+/*   Updated: 2023/11/23 14:07:54 by cdutel           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-//#include <stdio.h>
 
-void	ft_update_temp(char *dest, char temp[])
+char	*ft_update_temp(char *temp, char *dest)
 {
-	int	i;
-	int	j;
+	char	*s;
+	int		i;
+	int		j;
 
-	i = 0;
-	if (temp[i] != '\0')
-	{
-		while (temp[i])
-			i++;
-	}
-	if (dest)
-	{
-		j = 0;
-		while (dest[j])
-		{
-			temp[i] = dest[j];
-			i++;
-			j++;
-		}
-		temp[i] = '\0';
-	}
-}
-
-int	ft_check_temp(char temp[])
-{
-	int	i;
-
+	s = malloc((ft_len(temp) + ft_len(dest) + 1) * sizeof(char));
+	if (!temp || !dest || !s)
+		return (NULL);
 	i = 0;
 	while (temp[i])
 	{
-		if (temp[i] == '\n' || temp[i] == '\0')
-			return (1);
+		s[i] = temp[i];
 		i++;
 	}
-	return (0);
+	j = 0;
+	while (dest[j])
+	{
+		s[i] = dest [j];
+		i++;
+		j++;
+	}
+	s[i] = '\0';
+	free(temp);
+	return (s);
+}
+
+char	*ft_check_temp(char *temp)
+{
+	int	i;
+
+	i = 0;
+	if (temp)
+	{
+		while (temp[i] && temp[i] != '\n')
+			i++;
+		if (temp[i] == '\n')
+			return ((char *)&temp[i]);
+	}
+	return (NULL);
+}
+
+char	*ft_read(char *temp, int fd)
+{
+	char	*dest;
+	int		value;
+
+	if (!temp)
+		temp = ft_calloc(1, 1);
+	dest = ft_calloc((BUFFER_SIZE + 1), sizeof(char));
+	if (!dest)
+		return (NULL);
+	value = 1;
+	while (value > 0)
+	{
+		value = read(fd, dest, BUFFER_SIZE);
+		if (value == -1)
+		{
+			free(dest);
+			free(temp);
+			return (NULL);
+		}
+		dest[value] = '\0';
+		temp = ft_update_temp(temp, dest);
+		if (ft_check_temp(temp))
+			break ;
+	}
+	free(dest);
+	return (temp);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	temp[100000];
-	char		*dest;
+	static char	*temp;
 	char		*line;
-	int			trigger;
-	int			value;
 
-	trigger = 0;
-	while (trigger == 0)
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
+	temp = ft_read(temp, fd);
+	if (!temp)
 	{
-		dest = malloc(sizeof(char) * BUFFER_SIZE + 1);
-		if (!dest)
-			return (NULL);
-		value = read(fd, dest, BUFFER_SIZE);
-		ft_update_temp(dest, temp);
-		free (dest);
-		if (ft_check_temp(temp) == 1 || value < BUFFER_SIZE)
-			trigger = 1;
+		free(temp);
+		return (NULL);
 	}
-	if (ft_check_temp(temp) == 1)
-	{
-		line = ft_new_line(temp);
-		ft_new_temp(temp);
-		return (line);
-	}
-	return (NULL);
+	line = ft_new_line(temp);
+	temp = ft_new_temp(temp);
+	return (line);
 }
 /*
 int main()
