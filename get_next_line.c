@@ -6,98 +6,118 @@
 /*   By: cdutel <cdutel@42student.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 21:01:32 by cdutel            #+#    #+#             */
-/*   Updated: 2023/11/23 14:07:54 by cdutel           ###   ########.fr       */
+/*   Updated: 2023/11/26 13:03:54 by cdutel           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*ft_update_temp(char *temp, char *dest)
+void	ft_free_list(t_list *temp)
 {
-	char	*s;
+	t_list	*current;
+	t_list	*next;
+
+	current = temp;
+	while (current)
+	{
+		free(current->data);
+		next = current->next;
+		free(current);
+		current = next;
+	}
+}
+
+void	ft_update_temp(char *dest, t_list **temp, int value)
+{
 	int		i;
-	int		j;
+	t_list	*last;
+	t_list	*next_temp;
 
-	s = malloc((ft_len(temp) + ft_len(dest) + 1) * sizeof(char));
-	if (!temp || !dest || !s)
-		return (NULL);
+	next_temp = malloc(sizeof(t_list));
+	if (!next_temp)
+		return ;
+	next_temp->next = NULL;
+	next_temp->data = malloc(sizeof(char) * (value + 1));
+	if (!next_temp->data)
+		return ;
 	i = 0;
-	while (temp[i])
+	while (dest[i] && i < value)
 	{
-		s[i] = temp[i];
+		next_temp->data[i] = dest[i];
 		i++;
 	}
-	j = 0;
-	while (dest[j])
+	next_temp->data[i] = '\0';
+	if (*temp == NULL)
 	{
-		s[i] = dest [j];
-		i++;
-		j++;
+		*temp = next_temp;
+		return ;
 	}
-	s[i] = '\0';
-	free(temp);
-	return (s);
+	last = ft_get_last(*temp);
+	last->next = next_temp;
 }
 
-char	*ft_check_temp(char *temp)
+int	ft_check_temp(t_list *temp)
 {
-	int	i;
+	int		i;
+	t_list	*last;
 
+	if (!temp)
+		return (0);
+	last = ft_get_last(temp);
 	i = 0;
-	if (temp)
+	while (last->data[i])
 	{
-		while (temp[i] && temp[i] != '\n')
-			i++;
-		if (temp[i] == '\n')
-			return ((char *)&temp[i]);
+		if (last->data[i] == '\n')
+			return (1);
+		i++;
 	}
-	return (NULL);
+	return (0);
 }
 
-char	*ft_read(char *temp, int fd)
+void	ft_read(t_list **temp, int fd)
 {
 	char	*dest;
 	int		value;
 
-	if (!temp)
-		temp = ft_calloc(1, 1);
-	dest = ft_calloc((BUFFER_SIZE + 1), sizeof(char));
-	if (!dest)
-		return (NULL);
 	value = 1;
-	while (value > 0)
+	while (!ft_check_temp(*temp) && value != 0)
 	{
+		dest = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+		if (!dest)
+			return ;
 		value = read(fd, dest, BUFFER_SIZE);
 		if (value == -1)
 		{
 			free(dest);
-			free(temp);
-			return (NULL);
+			free(*temp);
+			return ;
 		}
 		dest[value] = '\0';
-		temp = ft_update_temp(temp, dest);
-		if (ft_check_temp(temp))
-			break ;
+		ft_update_temp(dest, temp, value);
+		free(dest);
 	}
-	free(dest);
-	return (temp);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*temp;
-	char		*line;
+	static t_list	*temp;
+	char			*line;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	temp = ft_read(temp, fd);
+	ft_read(&temp, fd);
 	if (!temp)
+		return (NULL);
+	line = NULL;
+	line = ft_new_line(temp);
+	ft_new_temp(&temp);
+	if (line[0] == '\0')
 	{
-		free(temp);
+		ft_free_list(temp);
+		temp = NULL;
+		free(line);
 		return (NULL);
 	}
-	line = ft_new_line(temp);
-	temp = ft_new_temp(temp);
 	return (line);
 }
 /*
@@ -106,7 +126,8 @@ int main()
 	int	fd;
 	char *test;
 
-	fd = open("caca.txt", O_RDONLY);
+	test = NULL;
+	fd = open("test.txt", O_RDONLY);
 	while (1)
 	{
 		test = get_next_line(fd);
