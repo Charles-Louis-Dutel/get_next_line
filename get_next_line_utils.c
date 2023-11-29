@@ -6,12 +6,15 @@
 /*   By: cdutel <cdutel@42student.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 21:01:19 by cdutel            #+#    #+#             */
-/*   Updated: 2023/11/26 12:59:20 by cdutel           ###   ########.fr       */
+/*   Updated: 2023/11/29 10:48:32 by cdutel           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
+/*Fonction ft_malloc_line : fonction qui permet
+de malloc la bonne taille pour la prochiane ligne du
+au manque de place dans la fonction précédente.*/
 static char	*ft_malloc_line(t_list *temp)
 {
 	char	*new_line;
@@ -38,6 +41,10 @@ static char	*ft_malloc_line(t_list *temp)
 	return (new_line);
 }
 
+/*Fonction ft_new_line : quand un '\n' a été trouvé par la
+fonction ft_check_temp, cette fonction permet de récupérer
+tous les caractères jusqu'au '\n' pour pouvoir retourner
+le contenu de la ligne.*/
 char	*ft_new_line(t_list *temp)
 {
 	char	*new_line;
@@ -66,6 +73,11 @@ char	*ft_new_line(t_list *temp)
 	return (new_line);
 }
 
+/*Fonction ft_new_temp : une fois qu'une ligne a été trouvé,
+cette fonction permet de mettre à jour la liste chainnée static.
+Au prochain appel de get_next_line, la liste temp contiendra
+le reste des caractères qui avaient été lu et qui se trouvaient
+après le 1er '\n'.*/
 void	ft_new_temp(t_list **temp)
 {
 	int		i;

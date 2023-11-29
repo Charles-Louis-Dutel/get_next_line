@@ -6,7 +6,7 @@
 /*   By: cdutel <cdutel@42student.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/26 13:03:59 by cdutel            #+#    #+#             */
-/*   Updated: 2023/11/26 13:11:40 by cdutel           ###   ########.fr       */
+/*   Updated: 2023/11/29 10:50:11 by cdutel           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,21 +120,3 @@ char	*get_next_line(int fd)
 	}
 	return (line);
 }
-/*
-int main()
-{
-	int	fd;
-	char *test;
-
-	test = NULL;
-	fd = open("test.txt", O_RDONLY);
-	while (1)
-	{
-		test = get_next_line(fd);
-		if (test == NULL)
-			break;
-		printf("%s", test);
-		free(test);
-	}
-	return 0;
-}*/

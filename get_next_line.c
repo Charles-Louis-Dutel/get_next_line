@@ -6,7 +6,7 @@
 /*   By: cdutel <cdutel@42student.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 21:01:32 by cdutel            #+#    #+#             */
-/*   Updated: 2023/11/26 13:03:54 by cdutel           ###   ########.fr       */
+/*   Updated: 2023/11/29 10:36:19 by cdutel           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,9 @@ void	ft_free_list(t_list *temp)
 	}
 }
 
+/*Fonction ft_update_temp : fonction qui permet de mettre à jour
+la liste chainnée après chaque appel de 'read'. Le nouvel élément
+est ajouté à la fin de la liste.*/
 void	ft_update_temp(char *dest, t_list **temp, int value)
 {
 	int		i;
@@ -56,6 +59,8 @@ void	ft_update_temp(char *dest, t_list **temp, int value)
 	last->next = next_temp;
 }
 
+/*Fonction ft_check_temp : fonction qui permet de regarder
+si un '\n' est présent dans le dernier élément de la liste chainnée*/
 int	ft_check_temp(t_list *temp)
 {
 	int		i;
@@ -74,6 +79,9 @@ int	ft_check_temp(t_list *temp)
 	return (0);
 }
 
+/*Fonction ft_read : fonction qui va lire dans le fichier
+correspondant au fd, la boucle sert à lire tant qu'un '\n'
+n'est pas rencontré ou qu'il y a quelque chose à lire*/
 void	ft_read(t_list **temp, int fd)
 {
 	char	*dest;
@@ -98,6 +106,8 @@ void	ft_read(t_list **temp, int fd)
 	}
 }
 
+/*Fonction get_next_line : fonction principale, sert à checker la
+validité du fd et du Buffer_size et appelle les autres fonctions*/
 char	*get_next_line(int fd)
 {
 	static t_list	*temp;
